@@ -1,0 +1,91 @@
+/* Restrained layout and API refinements layered on top of Furo. */
+
+/* Give source listings and long API signatures a little more room on
+   desktop screens while preserving Furo's responsive breakpoints below the
+   width at which both sidebars and the wider content column fit. */
+@media (min-width: 86em) {
+  .content {
+    width: 50em;
+  }
+}
+
+dl.py.class {
+  margin-bottom: 2.5rem;
+}
+
+dl.py.method,
+dl.py.function,
+dl.py.property,
+dl.py.attribute {
+  margin-top: 1.35rem;
+  margin-bottom: 1.35rem;
+}
+
+dl.py > dt.sig.sig-object {
+  max-width: 100%;
+  padding: 0.55rem 0.75rem 0.55rem 3em;
+  line-height: 1.45;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-foreground-border);
+  border-left: 0.25rem solid var(--color-brand-primary);
+  border-radius: 0.25rem;
+}
+
+dl.py.class > dt.sig.sig-object {
+  padding: 0.7rem 0.85rem 0.7rem 3em;
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+dl.py.method > dt.sig.sig-object,
+dl.py.function > dt.sig.sig-object,
+dl.py.property > dt.sig.sig-object,
+dl.py.attribute > dt.sig.sig-object {
+  font-size: 0.96rem;
+}
+
+dl.py > dd {
+  margin-top: 0.75rem;
+}
+
+dl.field-list > dt {
+  color: var(--color-brand-primary);
+  font-weight: 700;
+}
+
+/* Keep display equations on one line and let the equation itself scroll when
+   it is wider than the documentation column.  The intrinsic width prevents
+   centered, oversized MathJax output from being clipped on its left edge. */
+.math-wrapper {
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.35rem;
+  width: 100%;
+}
+
+.math-wrapper > div.math {
+  box-sizing: border-box;
+  min-width: 100%;
+  text-align: center;
+  width: max-content;
+}
+
+@media (max-width: 46rem) {
+  dl.py > dt.sig.sig-object .viewcode-link {
+    float: none;
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
+  dl.py.class > dt.sig.sig-object {
+    font-size: 1rem;
+  }
+
+  dl.py.method > dt.sig.sig-object,
+  dl.py.function > dt.sig.sig-object,
+  dl.py.property > dt.sig.sig-object,
+  dl.py.attribute > dt.sig.sig-object {
+    font-size: 0.9rem;
+  }
+}
