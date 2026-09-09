@@ -72,10 +72,14 @@ def test_installation_documents_standard_tutorial_ready_installation() -> None:
 
 def test_public_repository_metadata_is_consistent() -> None:
     repository_url = "https://github.com/sandialabs/multifidelity-triangular-transport"
+    documentation_url = "https://sandialabs.github.io/multifidelity-triangular-transport/"
     pyproject_text = (PROJECT_ROOT / "pyproject.toml").read_text()
+    readme_text = (PROJECT_ROOT / "README.md").read_text()
     installation_text = (PROJECT_ROOT / "docs" / "installation.md").read_text()
 
-    assert pyproject_text.count(repository_url) == 4
+    assert pyproject_text.count(repository_url) == 3
+    assert f'Documentation = "{documentation_url}"' in pyproject_text
+    assert documentation_url in readme_text
     assert f"git clone {repository_url}.git" in installation_text
     assert not (PROJECT_ROOT / "Gianluca_Instructions.md").exists()
 
@@ -112,7 +116,39 @@ def test_sphinx_source_tree_is_complete() -> None:
         "hierarchical-triangular-map.md",
         "non-hierarchical-triangular-map.md",
     }
-    assert (PROJECT_ROOT / "docs" / "_static" / "api.css").exists()
+    assert (PROJECT_ROOT / "docs" / "_static" / "custom.css").exists()
+    assert not (PROJECT_ROOT / "docs" / "_static" / "api.css").exists()
+
+
+def test_documentation_landing_page_exposes_primary_routes() -> None:
+    index_text = (PROJECT_ROOT / "docs" / "index.md").read_text()
+    for heading in (
+        "Single-fidelity",
+        "Hierarchical multifidelity",
+        "Nonhierarchical multifidelity",
+    ):
+        assert heading in index_text
+    for route in ("installation", "api", "notation", "operations", "citation"):
+        assert route in index_text
+    assert index_text.count(":hidden:") == 5
+    assert "https://github.com/sandialabs/multifidelity-triangular-transport" in index_text
+
+
+def test_documentation_configuration_is_publishable() -> None:
+    pyproject_text = (PROJECT_ROOT / "pyproject.toml").read_text()
+    conf_text = (PROJECT_ROOT / "docs" / "conf.py").read_text()
+    workflow_text = (PROJECT_ROOT / ".github" / "workflows" / "docs.yml").read_text()
+
+    assert pyproject_text.count('"sphinx-design>=0.6,<0.7"') == 2
+    assert '"sphinx_design"' in conf_text
+    assert 'html_css_files = ["custom.css"]' in conf_text
+    assert (
+        'html_baseurl = "https://sandialabs.github.io/multifidelity-triangular-transport/"'
+        in conf_text
+    )
+    assert "python -m sphinx -W --keep-going -b html docs docs/_build/html" in workflow_text
+    assert "actions/upload-pages-artifact@v4" in workflow_text
+    assert "actions/deploy-pages@v4" in workflow_text
 
 
 def test_developer_notes_are_not_public_sphinx_documents() -> None:

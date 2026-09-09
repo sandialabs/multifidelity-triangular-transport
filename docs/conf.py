@@ -15,6 +15,7 @@ version = __version__
 extensions = [
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx_design",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
@@ -31,9 +32,24 @@ master_doc = "index"
 
 html_theme = "furo"
 html_title = f"MFTT {version} documentation"
+html_baseurl = "https://sandialabs.github.io/multifidelity-triangular-transport/"
 html_show_copyright = False
 html_static_path = ["_static"]
-html_css_files = ["api.css"]
+html_css_files = ["custom.css"]
+html_theme_options = {
+    "light_css_variables": {
+        "color-brand-primary": "#005f85",
+        "color-brand-content": "#005f85",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#66c2e8",
+        "color-brand-content": "#66c2e8",
+    },
+    "source_repository": "https://github.com/sandialabs/multifidelity-triangular-transport/",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "top_of_page_buttons": ["view", "edit"],
+}
 
 autosummary_generate = True
 autodoc_default_options = {
@@ -61,13 +77,6 @@ nb_merge_streams = True
 
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
 copybutton_prompt_is_regexp = True
-
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "numpy": ("https://numpy.org/doc/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy", None),
-}
-
 
 # Keep this file discoverable to editors and make its path explicit for tools
 # that inspect the documentation configuration.

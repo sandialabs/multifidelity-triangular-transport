@@ -1,4 +1,20 @@
-/* Restrained layout and API refinements layered on top of Furo. */
+/* Restrained project, layout, and API refinements layered on top of Furo. */
+
+.mftt-hero {
+  border-left: 0.3rem solid var(--color-brand-primary);
+  margin-bottom: 1.5rem;
+  padding: 0.25rem 0 0.35rem 1.25rem;
+}
+
+.mftt-hero > p:first-of-type {
+  color: var(--color-brand-content);
+  font-size: 1.2rem;
+  margin-top: 0;
+}
+
+.mftt-actions {
+  margin-bottom: 1.75rem;
+}
 
 /* Give source listings and long API signatures a little more room on
    desktop screens while preserving Furo's responsive breakpoints below the
@@ -54,7 +70,7 @@ dl.field-list > dt {
 }
 
 /* Keep display equations on one line and let the equation itself scroll when
-   it is wider than the documentation column.  The intrinsic width prevents
+   it is wider than the documentation column. The intrinsic width prevents
    centered, oversized MathJax output from being clipped on its left edge. */
 .math-wrapper {
   box-sizing: border-box;
@@ -72,6 +88,10 @@ dl.field-list > dt {
 }
 
 @media (max-width: 46rem) {
+  .mftt-hero {
+    padding-left: 0.85rem;
+  }
+
   dl.py > dt.sig.sig-object .viewcode-link {
     float: none;
     display: inline-block;

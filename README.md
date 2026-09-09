@@ -1,51 +1,72 @@
 # MFTT: Multifidelity Triangular Transport
 
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-005f85)](https://sandialabs.github.io/multifidelity-triangular-transport/)
+[![Documentation workflow](https://github.com/sandialabs/multifidelity-triangular-transport/actions/workflows/docs.yml/badge.svg)](https://github.com/sandialabs/multifidelity-triangular-transport/actions/workflows/docs.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 MFTT learns monotone triangular transport maps from samples of one or more
 target distributions. It implements the single-fidelity, hierarchical, and
-non-hierarchical constructions in the submitted manuscript *Multifidelity
-Formulations for Triangular Transport*.
+nonhierarchical constructions in the submitted manuscript *Multifidelity
+Formulations for Triangular Transport*, with particular attention to settings
+where high-fidelity data are scarce.
 
-## Install
+## Installation
 
-MFTT supports Python 3.10 or newer. From a clone of the repository, create an
-isolated environment and install the runtime package:
+MFTT supports Python 3.10 or newer. Install it from a repository clone:
 
 ```bash
+git clone https://github.com/sandialabs/multifidelity-triangular-transport.git
+cd multifidelity-triangular-transport
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 python -m pip install .
 ```
 
-Verify the installation from the repository root:
+The [installation guide](https://sandialabs.github.io/multifidelity-triangular-transport/installation.html)
+includes Windows commands and verification instructions.
 
-```bash
-python -m pytest
+## Quick example
+
+```python
+import numpy as np
+
+from mftt import MapParams, TriangularMap
+
+rng = np.random.default_rng(2026)
+u, v = rng.standard_normal((2, 600))
+samples = np.column_stack((u, v + 0.5 * (u**2 - 1.0)))
+
+model = TriangularMap(samples, MapParams(total_order=2))
+model.train()
+
+reference_samples = model.evaluate(samples)
+recovered_samples = model.inverse(reference_samples[:32])
+np.testing.assert_allclose(recovered_samples, samples[:32], atol=1e-8)
 ```
 
-The [installation guide](docs/installation.md) includes Windows commands,
-direct GitHub installation, and the complete standard dependency list. The
-standard installation is ready to run the tutorials.
+See the [single-fidelity guide](https://sandialabs.github.io/multifidelity-triangular-transport/single-fidelity.html)
+for the full model workflow and interpretation.
 
 ## Documentation
 
-The complete documentation is available from the [Sphinx documentation
-index](docs/index.md):
+The complete rendered documentation is available at
+**[sandialabs.github.io/multifidelity-triangular-transport](https://sandialabs.github.io/multifidelity-triangular-transport/)**.
 
-- [Notation and mathematical foundations](docs/notation.md)
-- [Single-fidelity guide](docs/single-fidelity.md)
-- [Hierarchical multifidelity guide](docs/hierarchical.md)
-- [Non-hierarchical multifidelity guide](docs/non-hierarchical.md)
-- [Shared operations](docs/operations.md)
-- [Public API reference](docs/api.md)
-- [Single-fidelity notebook](docs/tutorials/single_fidelity_tutorial.ipynb)
-- [Hierarchical notebook](docs/tutorials/hierarchical_multifidelity_tutorial.ipynb)
-- [Non-hierarchical notebook](docs/tutorials/non_hierarchical_multifidelity_tutorial.ipynb)
-- [Developer guide](DEVELOPER_GUIDE.md)
+- [Mathematical notation](https://sandialabs.github.io/multifidelity-triangular-transport/notation.html)
+- [Method guides](https://sandialabs.github.io/multifidelity-triangular-transport/#methods)
+- [Rendered tutorials](https://sandialabs.github.io/multifidelity-triangular-transport/#tutorials)
+- [Public API reference](https://sandialabs.github.io/multifidelity-triangular-transport/api.html)
+
+## Citation
 
 The manuscript is the authority for the mathematical definitions and method
-names. This repository's [citation page](docs/citation.md) records the
-reference and maps its Sections 3–4 to the documentation.
+names. See the [citation page](https://sandialabs.github.io/multifidelity-triangular-transport/citation.html)
+for software authorship and the manuscript reference.
+
+## Development
+
+Contributor setup and local documentation build commands are in the
+[developer guide](DEVELOPER_GUIDE.md).
 
 ## Authors and license
 
