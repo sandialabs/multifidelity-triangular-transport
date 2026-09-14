@@ -138,9 +138,8 @@ Gaussian, log-concave, or factorized. The component objectives are therefore
 generally coupled. MFTT uses the all-at-once analytic-gradient training path
 (`TriangularMap.train_aao`) for every changing-reference stage. This method
 faithfully models adjacent transports, but recursive reference evaluation can
-make it more expensive and harder to optimize. See
-[references and training paths](single-fidelity.md#references-and-training-paths)
-for the distinction between the componentwise and full-reference objectives.
+make it more expensive and harder to optimize. Indeed, with few exceptions, we recommend using the fixed-reference
+hiearchical method presented below. Empirically, it is both faster to train and more stable.
 
 ## Fixed-reference hierarchy
 
@@ -280,7 +279,7 @@ The stage maps themselves then use identity standardization, so all stage
 compositions act in standardized coordinates. Public methods accept and return
 raw high-fidelity coordinates: `evaluate` applies the high-fidelity
 standardization, while `inverse`, sampling, and density methods undo or account
-for it, including its Jacobian contribution.
+for it.
 
 After training:
 
@@ -293,7 +292,7 @@ After training:
 - Calling `train` again resets all stage maps and replaces the previous fit.
   Create separate objects when comparing the two methods.
 
-For complete executable diagnostics and plots, continue to the
+For a complete executable tutorial, continue to the
 [hierarchical notebook](tutorials/hierarchical_multifidelity_tutorial.ipynb).
 See the [hierarchical API reference](api/maps/hierarchical-triangular-map.md)
 for all methods and [shared operations](operations.md) for inversion,

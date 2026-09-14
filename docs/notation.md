@@ -5,6 +5,9 @@ map direction and notation shared by the single-fidelity, hierarchical, and
 non-hierarchical methods. The method guides develop the corresponding
 parameterizations and training objectives.
 
+For broader introductions to triangular transport, see
+{footcite:p}`baptista2024representation,marzouk2016sampling,ramgraber2025friendly`.
+
 ## Monotone triangular maps
 
 Let $\pi$ be a target density and $\eta$ a tractable reference density on
@@ -77,13 +80,15 @@ forward, inverse, sampling, and density interfaces.
 
 Under standard absolute-continuity assumptions, the monotone triangular map
 coupling $\pi$ and $\eta$ is unique up to vairable ordering. It is the
-Knothe--Rosenblatt (KR) rearrangement.
+Knothe--Rosenblatt (KR) rearrangement
+{footcite:p}`bonnotte2013knothe,carlier2010knothe,marzouk2016sampling,rosenblatt1952remarks`.
 
 Triangularity reduces inversion to a sequence of scalar problems. First solve
 $S_1(x_1)=z_1$ for $x_1$, then solve
 $S_2(x_1,x_2)=z_2$ for $x_2$, and continue through component $d$. Strict
 monotonicity in $x_k$ makes each scalar solution unique when it exists. This
-same structure supports exact conditioning on a leading coordinate prefix.
+same structure supports exact conditioning on a leading coordinate prefix
+{footcite:p}`marzouk2016sampling`.
 
 ## Sample and fidelity conventions
 
@@ -141,3 +146,8 @@ methods.
 | $N_\ell$ | Number of samples at fidelity $\ell$ |
 | $\ell=0$ | High-fidelity source |
 | $\ell>0$ | Lower-fidelity source |
+
+## References
+
+```{footbibliography}
+```

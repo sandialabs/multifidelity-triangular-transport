@@ -16,6 +16,7 @@ extensions = [
     "myst_nb",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinxcontrib.bibtex",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
@@ -29,6 +30,8 @@ templates_path: list[str] = []
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "development.md"]
 source_suffix = {".md": "myst-nb", ".ipynb": "myst-nb", ".rst": "restructuredtext"}
 master_doc = "index"
+bibtex_bibfiles = ["references.bib"]
+bibtex_default_style = "plain"
 
 html_theme = "furo"
 html_title = f"MFTT {version} documentation"

@@ -28,9 +28,21 @@ $$
 \boldsymbol S_\sharp\pi=\eta.
 $$
 
-Because $\pi$ is available only through samples, MFTT seeks an approximation
-$\widehat{\boldsymbol S}^{\mathrm{SF}}$ by minimizing the divergence from
-$\pi$ to the map-induced density:
+We denote by $\mathcal F_\triangle$ the set of
+monotone lower-triangular maps:
+
+$$
+\mathcal F_\triangle
+:=\left\{
+\boldsymbol S:\mathbb R^d\to\mathbb R^d
+\;\middle|\;
+[\boldsymbol S(\boldsymbol x)]_k=S_k(\boldsymbol x_{\leq k}),\quad
+\partial_kS_k(\boldsymbol x_{\leq k})>0,\quad k=1,\ldots,d
+\right\}.
+$$
+
+The KR map can be characterized by minimizing the divergence from $\pi$ to
+the map-induced density {footcite:p}`marzouk2016sampling`:
 
 $$
 \boldsymbol S^*
@@ -50,30 +62,17 @@ $$
 \right].
 $$
 
-For one sample, split the negative pullback log-density into its reference and
-Jacobian contributions,
+Because $\pi$ is available only through $\mathcal X$, the expectation is
+replaced by its sample-average approximation, which can also be understood as
+maximum-likelihood estimation {footcite:p}`wang2022minimax`:
 
 $$
-\mathcal L_j(\boldsymbol\theta)
-:=\mathcal L_j^{\mathrm{ref}}(\boldsymbol\theta)
-+\mathcal L_j^{\mathrm{Jac}}(\boldsymbol\theta),
-$$
-
-where
-
-$$
-\mathcal L_j^{\mathrm{ref}}(\boldsymbol\theta)
-:=-\log\eta\!\left(
-\boldsymbol S(\boldsymbol x^{(j)};\boldsymbol\theta)
-\right),
-$$
-
-and
-
-$$
-\mathcal L_j^{\mathrm{Jac}}(\boldsymbol\theta)
-:=-\log\det\nabla\boldsymbol S(
-\boldsymbol x^{(j)};\boldsymbol\theta).
+\min_{\boldsymbol S\in\mathcal F_\triangle}
+\frac{1}{N}\sum_{j=1}^{N}
+\left[
+-\log\eta\!\left(\boldsymbol S(\boldsymbol x^{(j)})\right)
+-\log\det\nabla\boldsymbol S(\boldsymbol x^{(j)})
+\right].
 $$
 
 The lower-triangular Jacobian gives
@@ -83,17 +82,6 @@ $$
 =\sum_{k=1}^d\log\partial_kS_k(\boldsymbol x_{\leq k}).
 $$
 
-MFTT minimizes the sample average with optional coefficient
-regularization,
-
-$$
-\min_{\boldsymbol\theta}
-\frac{1}{N}\sum_{j=1}^{N}\mathcal L_j(\boldsymbol\theta)
-+\lambda\lVert\boldsymbol\theta\rVert_2^2.
-$$
-
-In code, `OptimizationParams.reg_cst` is $\lambda$; its default is zero.
-
 ### Componentwise Gaussian objective
 
 For the standard-normal reference,
@@ -101,67 +89,64 @@ $-\log\eta(\boldsymbol z)=\tfrac12\sum_k z_k^2+C$. The training objective
 therefore separates into $d$ component problems,
 
 $$
-\min_{\boldsymbol\theta_k}
+\min_{S_k:\mathbb R^k\to\mathbb R,\;\partial_kS_k>0}
 \frac{1}{N}\sum_{j=1}^{N}
 \left[
-\frac12 S_k^2(
-\boldsymbol x_{\leq k}^{(j)};\boldsymbol\theta_k)
--\log\partial_kS_k(
-\boldsymbol x_{\leq k}^{(j)};\boldsymbol\theta_k)
+\frac12 S_k^2(\boldsymbol x_{\leq k}^{(j)})
+-\log\partial_kS_k(\boldsymbol x_{\leq k}^{(j)})
 \right]
-+\lambda\lVert\boldsymbol\theta_k\rVert_2^2,
-\quad k=1,\ldots,d.
+,\qquad k=1,\ldots,d.
 $$
 
-`TriangularMap.train()` implements this standard-Gaussian objective, training
-one component at a time. The problems are mathematically independent even
-though the implementation visits them in component order. Componentwise
-training is usually preferable because it replaces one large optimization
-with several smaller ones.
-
-`TriangularMap.train_aao()` instead optimizes the full, all-at-once objective.
-It evaluates `model.reference` directly and uses its score for analytic
-gradients. This is the appropriate training path for a general, possibly
-nonfactorized reference, and it is also used when a multifidelity stage has a
-map-induced reference. The reference must therefore provide both a log
-density and a score.
+These component problems are mathematically independent. A concrete
+coefficient parameterization is introduced next.
 
 ## Monotone component parameterization
 
 Each component must remain increasing in its final coordinate throughout
-optimization. MFTT enforces this constraint with an integrated rectifier:
+optimization. MFTT enforces this through an integrated rectifier
+parameterization {footcite:p}`baptista2024representation`. Let
+$\boldsymbol f=(f_1,\ldots,f_d)$ be lower triangular and write
+$\boldsymbol S=\mathcal R(\boldsymbol f)$ for the integrated-rectifier
+operator. It acts componentwise as
 
 $$
-S_k(\boldsymbol x_{\leq k};\boldsymbol\theta_k)=f_k(\boldsymbol x_{<k},0;\boldsymbol\theta_k)+\int_0^{x_k}g\!\left(\partial_k f_k(\boldsymbol x_{<k},t;\boldsymbol\theta_k)\right)\,\mathrm dt.
+S_k(\boldsymbol x_{\leq k})
+=\mathcal R_k(f_k)(\boldsymbol x_{\leq k})
+=f_k(\boldsymbol x_{\leq k-1},0)
++\int_0^{x_k}g\!\left(
+\partial_k f_k(\boldsymbol x_{\leq k-1},t)
+\right)\,\mathrm dt.
 $$
 
-Here, $f_k:\mathbb R^k\to\mathbb R$ is a finite expansion and
-$g:\mathbb R\to(0,\infty)$ is a positive rectifier. Differentiating with
-respect to the final coordinate gives
+Here, $f_k:\mathbb R^k\to\mathbb R$, while
+$g:\mathbb R\to(0,\infty)$ is a positive, bijective rectifier. The manuscript
+uses the SoftPlus rectifier
+{footcite:p}`baptista2024representation,ramgraber2025friendly`:
 
 $$
-\partial_kS_k(\boldsymbol x_{\leq k};\boldsymbol\theta_k)
+g(u)=\operatorname{SoftPlus}(u)=\log(1+\exp(u)).
+$$
+
+Differentiating with respect to the final coordinate gives
+
+$$
+\partial_kS_k(\boldsymbol x_{\leq k})
 =g\!\left(
-\partial_kf_k(\boldsymbol x_{\leq k};\boldsymbol\theta_k)
+\partial_kf_k(\boldsymbol x_{\leq k})
 \right)>0,
 $$
 
-so every coefficient vector represents a monotone component. In the
-implementation, $f_k$ is a multivariate Hermite-function expansion, $g$ is
-SoftPlus, and `rectifier_epsilon` adds a small positive floor to the
-derivative. The integral is approximated by the component's Gauss--Legendre
-`QuadratureRule`.
+so $\mathcal R(\boldsymbol f)\in\mathcal F_\triangle$ for every admissible
+$\boldsymbol f$. The implementation evaluates
+$g_\epsilon(u)=\operatorname{SoftPlus}(u)+\epsilon$, where
+`rectifier_epsilon` is the small positive floor $\epsilon$ used for numerical stability, and approximates
+the integral with the component's Gauss--Legendre `QuadratureRule`.
 
 The nonmonotone term uses expansion terms that are constant in $x_k$. Terms
 that depend on $x_k$ contribute through the rectified derivative and its
 integral. Both parts share the coefficient block exposed by
 `model.coefficients.components[k - 1]`.
-
-The objective is convex over suitable infinite-dimensional map spaces when
-the reference is log-concave. The finite integrated-rectifier
-parameterization is nonlinear in its coefficients, however, so the numerical
-optimization is generally nonconvex. Initialization, basis size,
-regularization, and convergence diagnostics still matter.
 
 ## Choosing component bases
 
@@ -171,10 +156,59 @@ The simplest configuration uses one total Hermite order for every component:
 params = MapParams(total_order=2)
 ```
 
-When this configuration is bound to $d$-dimensional data, component $k$ gets
-all $k$-dimensional multi-indices $\boldsymbol\alpha$ with
-$|\boldsymbol\alpha|\leq2$. Thus the number of terms grows with both $k$ and
-the selected order.
+Following the manuscript, MFTT restricts $f_k$ to a finite-dimensional space
+$V_k^p$ and writes
+
+$$
+f_k(\boldsymbol x_{\leq k};\boldsymbol\theta_k)
+=\sum_{\boldsymbol\alpha\in\Lambda_k(p)}
+c_{\boldsymbol\alpha}\Phi_{\boldsymbol\alpha}(\boldsymbol x_{\leq k}),
+\qquad
+\boldsymbol\theta_k
+=\{c_{\boldsymbol\alpha}:\boldsymbol\alpha\in\Lambda_k(p)\},
+$$
+
+where $\Phi_{\boldsymbol\alpha}$ is a tensor-product basis function
+{footcite:p}`ernst2012convergence,lemaitre2010spectral`. The total-order index
+set is
+
+$$
+\Lambda_k(p)
+=\left\{\boldsymbol\alpha\in\mathbb N_0^k:
+|\boldsymbol\alpha|_1=\sum_{r=1}^k\alpha_r\leq p\right\}.
+$$
+
+MFTT uses ordinary probabilists'
+Hermite polynomials for constant and linear factors and damped Hermite
+functions for factors of order two and higher
+{footcite:p}`ramgraber2025friendly`.
+
+After selecting these finite-dimensional spaces, write
+$\boldsymbol S(\cdot;\boldsymbol\theta)
+=\mathcal R(\boldsymbol f(\cdot;\boldsymbol\theta))$. MFTT then solves the
+coefficient-level version of the sample-average problem, with optional
+regularization:
+
+$$
+\min_{\boldsymbol\theta}
+\frac{1}{N}\sum_{j=1}^{N}
+\left[
+-\log\eta\!\left(
+\boldsymbol S(\boldsymbol x^{(j)};\boldsymbol\theta)
+\right)
+-\log\det\nabla\boldsymbol S(
+\boldsymbol x^{(j)};\boldsymbol\theta)
+\right]
++\lambda\lVert\boldsymbol\theta\rVert_2^2.
+$$
+
+In code, `OptimizationParams.reg_cst` is $\lambda$; its default is zero.
+For the standard-normal reference, `TriangularMap.train()` solves the
+separated component problems one at a time. `TriangularMap.train_aao()`
+instead solves the full coefficient problem and evaluates `model.reference`
+and its score directly. The all-at-once path supports a general, possibly
+nonfactorized reference and is also used when a multifidelity stage has a
+map-induced reference.
 
 As an alternative to the total order construction, one can specify a custom multi-index set for each component:
 
@@ -235,11 +269,11 @@ induced by the learned map.
 | Standardized training samples | `model.standardized_train_data` |
 | $\eta$ | `model.reference`, configured with `Reference` |
 | $S_k$ | `model.components[k - 1]` |
-| Hermite expansion $f_k$ | `model.components[k - 1].expansion` |
+| $f_k\in V_k^p$ with basis $\{\Phi_{\boldsymbol\alpha}\}$ | `model.components[k - 1].expansion` |
 | Component coefficients $\boldsymbol\theta_k$ | `model.coefficients.components[k - 1]` |
 | Flattened $\boldsymbol\theta$ | `model.coeffs` or `model.coefficients.flatten()` |
 | Total-order or explicit basis | `MapParams` and each component's `BasisSpec` |
-| Positive rectifier and quadrature | Each component's `rectifier` and `QuadratureRule` |
+| $\mathcal R_k$, SoftPlus $g$, and quadrature | Each component's `rectifier` and `QuadratureRule` |
 | $\lambda$ | `OptimizationParams.reg_cst` |
 | $\widehat{\boldsymbol S}^{\mathrm{SF}}$ | `model.evaluate(x)`, with `inverse(z)` for its inverse |
 
@@ -255,8 +289,7 @@ $$
 
 These values are fitted map state in `model.standardization_params`.
 Public methods accept and return raw target coordinates: `evaluate` applies
-the standardization internally, while `inverse` and sampling undo it. Density
-and `log_det` evaluations include the standardization Jacobian.
+the standardization internally, while `inverse`, sampling, and density evaluation undo it.
 
 ### References and training paths
 
@@ -295,5 +328,10 @@ Optimizer success alone does not establish an accurate transport.
 For inversion controls, prefix-conditional operations, density queries, and
 diagnostic return types, see [shared operations](operations.md). Continue to
 the [single-fidelity notebook](tutorials/single_fidelity_tutorial.ipynb) for a
-complete executable banana example with plots, or consult the
+complete executable example, or consult the
 [single-fidelity API reference](api/maps/triangular-map.md) for all methods.
+
+## References
+
+```{footbibliography}
+```

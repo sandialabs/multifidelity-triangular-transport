@@ -100,8 +100,8 @@ cd multifidelity-triangular-transport
 python -m pip install .
 ```
 
-See the [installation guide](installation.md) for environment setup, Windows
-commands, and verification instructions.
+See the [installation guide](installation.md) for environment setup
+and verification instructions.
 
 (tutorials)=
 ## Tutorials

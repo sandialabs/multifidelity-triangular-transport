@@ -140,7 +140,11 @@ def test_documentation_configuration_is_publishable() -> None:
     workflow_text = (PROJECT_ROOT / ".github" / "workflows" / "docs.yml").read_text()
 
     assert pyproject_text.count('"sphinx-design>=0.6,<0.7"') == 2
+    assert pyproject_text.count('"sphinxcontrib-bibtex>=2.7,<3"') == 2
     assert '"sphinx_design"' in conf_text
+    assert '"sphinxcontrib.bibtex"' in conf_text
+    assert 'bibtex_bibfiles = ["references.bib"]' in conf_text
+    assert 'bibtex_default_style = "plain"' in conf_text
     assert 'html_css_files = ["custom.css"]' in conf_text
     assert (
         'html_baseurl = "https://sandialabs.github.io/multifidelity-triangular-transport/"'
@@ -149,6 +153,32 @@ def test_documentation_configuration_is_publishable() -> None:
     assert "python -m sphinx -W --keep-going -b html docs docs/_build/html" in workflow_text
     assert "actions/upload-pages-artifact@v4" in workflow_text
     assert "actions/deploy-pages@v4" in workflow_text
+
+
+def test_foundational_guides_have_local_bibliographies() -> None:
+    references = (PROJECT_ROOT / "docs" / "references.bib").read_text()
+    expected_keys = {
+        "baptista2024representation",
+        "bonnotte2013knothe",
+        "carlier2010knothe",
+        "ernst2012convergence",
+        "lemaitre2010spectral",
+        "marzouk2016sampling",
+        "ramgraber2025friendly",
+        "rosenblatt1952remarks",
+        "wang2022minimax",
+    }
+    assert {key for key in expected_keys if f"{{{key}," in references} == expected_keys
+
+    cited_keys: set[str] = set()
+    for filename in ("notation.md", "single-fidelity.md"):
+        text = (PROJECT_ROOT / "docs" / filename).read_text()
+        assert "{footcite:p}`" in text
+        assert text.count("```{footbibliography}") == 1
+        assert text.index("## References") < text.index("```{footbibliography}")
+        for citation in re.findall(r"\{footcite:p\}`([^`]+)`", text):
+            cited_keys.update(citation.split(","))
+    assert cited_keys == expected_keys
 
 
 def test_developer_notes_are_not_public_sphinx_documents() -> None:

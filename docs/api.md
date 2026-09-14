@@ -7,7 +7,7 @@ import mftt
 ```
 
 The generated reference below is built directly from the public classes and
-functions in `mftt`. Their NumPy-style docstrings are the authoritative source
+functions in `mftt`. Their NumPy-style docstrings are the source
 for signatures, parameters, defaults, return values, and exceptions.
 
 ```{toctree}
@@ -21,5 +21,5 @@ api/diagnostics
 
 The stable package version is available as `mftt.__version__`. The public
 map contract is summarized in [shared operations](operations.md), including
-the target/reference direction, raw-coordinate behavior, density helpers, and
-prefix-conditioned sampling.
+the target/reference direction, raw-coordinate behavior, density helpers, and 
+conditional sampling.

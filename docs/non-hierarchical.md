@@ -2,7 +2,7 @@
 
 Non-hierarchical multifidelity transport uses low-fidelity models as **peer
 information sources** rather than arranging them in a hierarchy. It first
-learns a transport for every low-fidelity density, then uses all of those maps
+learns a transport for each low-fidelity density, then uses all of those maps
 inside one monotone high-fidelity transport. This page develops the
 parameterization and its two-phase training procedure before connecting each
 mathematical object to `NonHierarchicalTriangularMap`.
@@ -60,7 +60,7 @@ $$
 \widehat S_{\ell,k}(\boldsymbol x_{\leq k};\boldsymbol\theta_{\ell,k}^*)=f_{\ell,k}(\boldsymbol x_{<k},0;\boldsymbol\theta_{\ell,k}^*)+\int_0^{x_k}g\!\left(\partial_k f_{\ell,k}(\boldsymbol x_{<k},t;\boldsymbol\theta_{\ell,k}^*)\right)\,\mathrm dt,
 $$
 
-where $g:\mathbb R\to(0,\infty)$ is the positive rectifier. The parameters
+where $g:\mathbb R\to(0,\infty)$ is the positive, bijective rectifier. This work takes $g:=\mathrm{SoftPlus}$. The parameters
 $\boldsymbol\theta_{\ell,k}^*$ are obtained during pretraining.
 
 In the manuscript-aligned construction, these pretrained parameters are then
@@ -139,10 +139,8 @@ input space while retaining the same final rectifier and monotonicity
 guarantee.
 
 `shift_order`, `scale_order`, and `correction_order` independently control the
-three function families. An order of zero still supplies the constant and
-final-coordinate linear seed required by the integrated parameterization. In
-particular, `correction_order=0` does not disable corrections; use
-`train(use_corrections=False)` to remove the separate correction blocks.
+three function families. Use `train(use_corrections=False)` to remove the 
+separate correction blocks.
 
 ## Two-phase training
 
@@ -205,8 +203,8 @@ multifidelity regularizer. `OptimizationParams.reg_cst` is $\lambda$.
 Setting `regularize_parent_terms=False` excludes the parent/correction blocks
 from this quadratic penalty while continuing to regularize shifts and scales.
 
-Although the manuscript calls Phase 2 all-at-once training, a factorized
-Gaussian reference makes the objective separable across triangular components.
+Phase 2 is referred to as all-at-once training because the shift, scale, and correction parameters are trained jointly. Nevertheless, 
+a factorized Gaussian reference makes the objective separable across triangular components.
 MFTT therefore trains $k=1,\ldots,d$ in sequence. Within each component, the
 shift, every peer scale, and every correction are optimized jointly against
 the high- and low-fidelity terms.
@@ -277,7 +275,7 @@ are evaluated on high-fidelity-standardized inputs to construct
 $\boldsymbol S^{\mathrm{NH}}$, while each corrected-parent loss is evaluated
 on its own parent-standardized data. Public evaluation, inversion, sampling,
 and density methods accept or return raw high-fidelity coordinates and account
-for the high-fidelity standardization and its Jacobian.
+for the high-fidelity standardization.
 
 After training:
 
@@ -304,8 +302,7 @@ ablation of the correction parameterization, not a mode with frozen,
 uncorrected parent maps.
 
 
-For a complete executable banana example with pushforward, sampling,
-conditional, and density diagnostics, continue to the
+For a complete executable example, continue to the
 [non-hierarchical notebook](tutorials/non_hierarchical_multifidelity_tutorial.ipynb).
 See the
 [non-hierarchical API reference](api/maps/non-hierarchical-triangular-map.md)
