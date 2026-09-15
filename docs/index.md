@@ -3,9 +3,8 @@
 :::{div} mftt-hero
 **Multifidelity Triangular Transport**
 
-Sample-trained monotone triangular maps for constructing transports with
-single- and multifidelity information, especially when high-fidelity data are
-scarce.
+Construct monotone triangular transport maps from
+multifidelity information.
 :::
 
 ::::{grid} 1 2 4 4
