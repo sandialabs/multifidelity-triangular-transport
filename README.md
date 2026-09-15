@@ -4,8 +4,7 @@
 [![Documentation workflow](https://github.com/sandialabs/multifidelity-triangular-transport/actions/workflows/docs.yml/badge.svg)](https://github.com/sandialabs/multifidelity-triangular-transport/actions/workflows/docs.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-MFTT learns monotone triangular transport maps from samples of one or more
-target distributions. It implements the single-fidelity, hierarchical, and
+MFTT enables the construction of monotone triangular transport maps from multifidelity training data. It implements the single-fidelity, hierarchical, and
 nonhierarchical constructions in the submitted manuscript *Multifidelity
 Formulations for Triangular Transport*, with particular attention to settings
 where high-fidelity data are scarce.
@@ -23,7 +22,7 @@ python -m pip install .
 ```
 
 The [installation guide](https://sandialabs.github.io/multifidelity-triangular-transport/installation.html)
-includes Windows commands and verification instructions.
+includes verification instructions.
 
 ## Quick example
 

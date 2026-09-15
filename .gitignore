@@ -1,5 +1,6 @@
 docs/_build/
 docs/.jupyter_cache/
+docs/development.md
 build/
 dist/
 .venv/
