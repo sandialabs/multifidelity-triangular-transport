@@ -54,9 +54,7 @@ GitHub
 ::::
 
 MFTT follows the notation and method names of the submitted manuscript
-*Multifidelity Formulations for Triangular Transport*. Choose the formulation
-that matches how fidelity information is organized, then use its rendered
-notebook for a paper-to-code walkthrough.
+*Multifidelity Formulations for Triangular Transport*.
 
 ## Methods
 
@@ -104,9 +102,6 @@ and verification instructions.
 
 (tutorials)=
 ## Tutorials
-
-The rendered notebooks pair the mathematical formulation with complete,
-reproducible examples and saved outputs:
 
 - [Single-fidelity tutorial](tutorials/single_fidelity_tutorial.ipynb)
 - [Hierarchical multifidelity tutorial](tutorials/hierarchical_multifidelity_tutorial.ipynb)
