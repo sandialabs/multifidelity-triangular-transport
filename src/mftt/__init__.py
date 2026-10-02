@@ -1,8 +1,9 @@
 """Multifidelity triangular transport maps.
 
 The :mod:`mftt` package implements the single-fidelity, hierarchical, and
-non-hierarchical constructions from the submitted manuscript *Multifidelity
-Formulations for Triangular Transport*.  The names listed in :data:`__all__`
+non-hierarchical constructions from the manuscript `Multifidelity
+Formulations for Triangular Transport <https://arxiv.org/abs/2610.00698>`_
+(arXiv:2610.00698, 2026).  The names listed in :data:`__all__`
 are the stable user-facing API.
 """
 

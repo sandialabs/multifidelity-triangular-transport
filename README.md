@@ -5,8 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 MFTT enables the construction of monotone triangular transport maps from multifidelity training data. It implements the single-fidelity, hierarchical, and
-nonhierarchical constructions in the submitted manuscript *Multifidelity
-Formulations for Triangular Transport*, with particular attention to settings
+nonhierarchical constructions in the manuscript [*Multifidelity
+Formulations for Triangular Transport*](https://arxiv.org/abs/2610.00698)
+(arXiv:2610.00698, 2026), with particular attention to settings
 where high-fidelity data are scarce.
 
 ## Installation

@@ -53,8 +53,9 @@ GitHub
 :::
 ::::
 
-MFTT follows the notation and method names of the submitted manuscript
-*Multifidelity Formulations for Triangular Transport*.
+MFTT follows the notation and method names of the manuscript
+[*Multifidelity Formulations for Triangular Transport*](https://arxiv.org/abs/2610.00698)
+(arXiv:2610.00698, 2026).
 
 ## Methods
 
